@@ -1,0 +1,28 @@
+{
+  "name": "jour1",
+  "version": "1.0.0",
+  "description": "découvrir node et npm",
+  "main": "01-hello.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alpha-OSOW/nodeJSalpha.git"
+  },
+  "keywords": [
+    "node",
+    "npm",
+    "javascript"
+  ],
+  "author": "Chicharito",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Alpha-OSOW/nodeJSalpha/issues"
+  },
+  "homepage": "https://github.com/Alpha-OSOW/nodeJSalpha#readme",
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4"
+  }
+}
