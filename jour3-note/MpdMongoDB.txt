@@ -1,0 +1,4 @@
+doranco
+WR3SpKMu9rdPldQ8
+
+mongodb+srv://doranco:WR3SpKMu9rdPldQ8@cluster0.hkcochd.mongodb.net/demo?retryWrites=true&w=majority
