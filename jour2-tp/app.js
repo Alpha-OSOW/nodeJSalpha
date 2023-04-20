@@ -1,122 +1,33 @@
-const express = require("express")
-const { articles } = require("./bdd")
-const { rechercheArticle } = require("./lib")
+const express = require("express");
+const route = require("./route")
+const routeUser = require("./route-user") // import et renommerr
+const {connect} = require("mongoose");
+require("dotenv").config();
+
+const URI = process.env.NODE_ENV === "production" ? process.env.BDD_PROD : process.env.BDD_DEV
+
+// set NODE_ENV=production  
+// set NODE_ENV=
+// variable dans un terminal en ligne de commande 
+/* console.log("ici" ,process.env.NODE_ENV)
+console.log("ici" ,URI) */
+
+connect(URI)
+    .then(() => console.log("connexion à MongoDB réussie"))
+    .catch((ex) => console.log(ex))
+
 const PORT = 4003 ;
 
-const serveur = express();
+const app = express()
 
-// CRUD pour les articles 
+app.use(express.json()) ; // middleware 
 
-serveur.use(express.json()); // Attention au middleware
-
-serveur.get("/article/:id" , (request , reponse) => {
-    const id = request.params.id ;
-
-    if(id === "all") return reponse.json(articles);
-
-    const article = rechercheArticle(articles , id)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-
-    return reponse.json(article)
-
-}) ;
-
-serveur.post("/article" , (request , reponse) => {
-    const article = request.body ;
-
-    // ajouter l'id
-    // ajouter les commandes 
-    //article.id = articles[articles.length -1].id + 1
-    article.id = Date.now()
-    article.commentaires = []
-    articles.push(article)
-    return reponse.json({msg : "insert ok"})
-
-});
-
-serveur.put("/article/:id" , (request , reponse) => {
-    const id = request.params.id ;
-    const { body } = request ;
-    const article = rechercheArticle(articles , id)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-
-    const index = articles.indexOf(article)
-
-    articles[index].titre = body.titre;
-    articles[index].contenu = body.contenu;
-
-    return reponse.json({msg : "update ok"})
-
-});
-
-serveur.delete("/article/:id" , (request , reponse) => {
-    const id = request.params.id ;
-    const article = rechercheArticle(articles , id)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-    const index = articles.indexOf(article)
-    articles.splice(index, 1);
-    return reponse.json({msg : "delete ok"})
-});
+app.use(route) ; // ça permet de stocker les routes dans un fichier à part
+app.use("/user" ,routeUser) ; // préfixe de route // http://localhost:4003/user/le-reste.
+                              // le-reste et méthode GET / POST /PUT / DELETE 
+                              // définie dans le fichier route-user.js 
 
 
-// CRUD pour les commentaires 
+app.listen(PORT , () => console.log(`express start sur port ${PORT}`));
 
-serveur.get("/commentaire/:idArticle" , (request , reponse) => {
-    const idArticle = request.params.idArticle ;
-    const article = rechercheArticle(articles , idArticle)
-    return reponse.json(article.commentaires)
-})
-serveur.post("/commentaire/:idArticle" , (request , reponse) => {
-    const idArticle = request.params.idArticle ;
-    const {body} = request
-    const article = rechercheArticle(articles , idArticle)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-    const index = articles.indexOf(article)
-    body.id = Date.now()
-    articles[index].commentaires.push(body)
-    return reponse.json({msg : "insert commentaire ok"})
-});
-
-serveur.put("/commentaire/:idArticle/:idCommentaire" , (request , reponse) => {
-    const idArticle = request.params.idArticle ;
-    const idCommentaire = request.params.idCommentaire ;
-    const {body} = request
-    const article = rechercheArticle(articles , idArticle)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-    const index = articles.indexOf(article)
-
-    const commentaireAModifier = articles[index].commentaires.find(function(commentaire){
-        return commentaire.id == idCommentaire
-    })
-    if(!commentaireAModifier) return reponse.status(404).json({msg : "erreur 404 commentaire introuvable"})
-
-    const indexCommentaire =  articles[index].commentaires.indexOf(commentaireAModifier)
-
-    articles[index].commentaires[indexCommentaire].auteur = body.auteur
-    articles[index].commentaires[indexCommentaire].message = body.message
-    
-    return reponse.json({msg : "update commentaire ok"})
-})
-
-serveur.delete("/commentaire/:idArticle/:idCommentaire" , (request , reponse) => {
-    const idArticle = request.params.idArticle ;
-    const idCommentaire = request.params.idCommentaire ;
-
-    const article = rechercheArticle(articles , idArticle)
-    if(!article) return reponse.status(404).json({msg : "erreur 404"})
-    const index = articles.indexOf(article)
-
-    const commentaireAModifier = articles[index].commentaires.find(function(commentaire){
-        return commentaire.id == idCommentaire
-    })
-    if(!commentaireAModifier) return reponse.status(404).json({msg : "erreur 404 commentaire introuvable"})
-    const indexCommentaire =  articles[index].commentaires.indexOf(commentaireAModifier)
-
-    articles[index].commentaires.splice(indexCommentaire , 1)
-
-    return reponse.json({msg : "delete commentaire ok"})
-})
-
-
-
-serveur.listen(PORT , () => console.log(`le serveur express est start sur le port ${PORT}`))
+// fichier d'entrée de notre API => chef d'orchestre => créer le serveur / appeler tout ce qu'il faut pour qu'il fonctionne 

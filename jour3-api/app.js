@@ -1,5 +1,6 @@
 const express = require("express");
 const route = require("./route")
+const routeUser = require("./route-user") // import et renommerr
 const {connect} = require("mongoose");
 require("dotenv").config();
 
@@ -21,8 +22,12 @@ const app = express()
 
 app.use(express.json()) ; // middleware 
 
-app.use(route) ; // ça permet de stocker les routes dans un fichier à partie
+app.use(route) ; // ça permet de stocker les routes dans un fichier à part
+app.use("/user" ,routeUser) ; // préfixe de route // http://localhost:4003/user/le-reste.
+                              // le-reste et méthode GET / POST /PUT / DELETE 
+                              // définie dans le fichier route-user.js 
+
 
 app.listen(PORT , () => console.log(`express start sur port ${PORT}`));
 
-// fichier d'entrée de notre API => chef d'orchestre => créer le serveur / appeler tout ce qu'il faut pour qu'il fonctionne
+// fichier d'entrée de notre API => chef d'orchestre => créer le serveur / appeler tout ce qu'il faut pour qu'il fonctionne 
