@@ -4,12 +4,22 @@ const Joi = require("joi")
 // en POST sont conformes au schéma MongoDB
 const schemaJoiUser = Joi.object({
     email : Joi.string().email({ tlds: { allow: false } }).required(),
-    password : Joi.string().regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/).required()
+    password : Joi.string().regex(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$/).required(),
+    role : Joi.string().allow("redacteur","admin").required()
 });
 // on verifie que les données postées contiennent les champs email / password 
 // email => email valid 
 // password => texte qui contient  au minimun 8 caractères avec Majuscule / minuscule et chiffres
 
-module.exports.schemaJoiUser = schemaJoiUser ;
 
-// sorte les verifications => require dans le fichier route-user.js 
+const schemaArticleJoi = Joi.object({ // 19 vérifications 
+    titre : Joi.string().min(5).max(255).required(),
+    contenu : Joi.string().min(5).max(10000).required(),
+    like : Joi.number().min(0).required(),
+    auteur : Joi.string().min(5).max(255).required(),
+})
+
+module.exports.schemaJoiUser = schemaJoiUser ;
+module.exports.schemaArticleJoi = schemaArticleJoi ;
+
+// sorte les verifications => require dans le fichier route-user.js
